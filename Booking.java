@@ -1,143 +1,248 @@
 
 package flight_booking_system;
 
-import java.util.ArrayList;
+import java.io.*;
+import java.util.*;
 
 public class Booking {
-
     private String bookingReference;
-    private String customer;
-    private int flight;
-    private ArrayList<Passenger> passengers;
-    private int seatSelections;
-    private boolean status;
-    private String paymentStatus;
+    private Customer customer;
+    private Flight flight;
+    private List<Passenger> passengers;
+    private List<String> seatSelections;
+    private String status; // e.g., "confirmed", "pending", "cancelled"
+    private String paymentStatus; // e.g., "paid", "pending", "failed"
 
-
-    public Booking(String bookingReference, String customer, int flight, 
-                  ArrayList<Passenger> passengers, int seatSelections, 
-                  boolean status, String paymentStatus) {
+    // Constructor
+    public Booking(String bookingReference, Customer customer, Flight flight) {
         this.bookingReference = bookingReference;
         this.customer = customer;
         this.flight = flight;
-        this.passengers = passengers;
-        this.seatSelections = seatSelections;
-        this.status = status;
-        this.paymentStatus = paymentStatus;
+        this.passengers = new ArrayList<>();
+        this.seatSelections = new ArrayList<>();
+        this.status = "pending";  // default status
+        this.paymentStatus = "pending";  // default payment status
+    }    
+    
+   public String toFileString() {
+    StringBuilder passengerData = new StringBuilder();
+    for (Passenger p : passengers) {
+        passengerData.append(p.toFileString()).append(";");
+    }
+    if (!passengers.isEmpty() && passengerData.length() > 0) {
+        passengerData.setLength(passengerData.length() - 1);
     }
 
+    StringBuilder seatData = new StringBuilder();
+    for (String seat : seatSelections) {
+        seatData.append(seat).append("|");
+    }
+    if (!seatSelections.isEmpty()) {
+        seatData.setLength(seatData.length() - 1);
+    }
+
+    return String.join("##",
+        bookingReference,
+        customer.getUserName(),
+        flight.getFlightID(),
+        seatData.toString(),
+        status,
+        paymentStatus,
+        passengerData.toString()
+    );
+}
+
+public static Booking fromFileString(String data) {
+    try {
+        String[] parts = data.split("##", -1);
+        if (parts.length < 7) {
+            System.out.println("Invalid booking format.");
+            return null;
+        }
+
+        String bookingRef = parts[0];
+        String customerName = parts[1]; // userName
+        String flightId = parts[2];
+        String[] seatTypes = parts[3].split("\\|");
+        String status = parts[4];
+        String paymentStatus = parts[5];
+        String passengerRaw = parts[6];
+
+        // Load actual customer and flight objects
+        Customer customer = null;
+        for (User u : FileManager.loadUsers()) {
+            if (u instanceof Customer && u.getUserName().equalsIgnoreCase(customerName)) {
+                customer = (Customer) u;
+                break;
+            }
+        }
+
+        Flight flight = null;
+        for (Flight f : FileManager.loadFlights()) {
+            if (f.getFlightID().equalsIgnoreCase(flightId)) {
+                flight = f;
+                break;
+            }
+        }
+
+        if (customer == null || flight == null) {
+            System.out.println("Customer or flight not found.");
+            return null;
+        }
+
+        // Load passengers
+        List<Passenger> passengers = new ArrayList<>();
+        if (!passengerRaw.isEmpty()) {
+            String[] passengerEntries = passengerRaw.split(";");
+            for (String entry : passengerEntries) {
+                Passenger p = Passenger.fromFileString(entry);
+                if (p != null) passengers.add(p);
+            }
+        }
+
+        // Create booking
+        Booking booking = new Booking(bookingRef, customer, flight);
+        booking.setPassengers(passengers);
+        booking.setSeatSelections(Arrays.asList(seatTypes));
+        booking.setStatus(status);
+        booking.setPaymentStatus(paymentStatus);
+
+        return booking;
+
+    } catch (Exception e) {
+        System.out.println("Error parsing booking: " + e.getMessage());
+        e.printStackTrace();
+        return null;
+    }
+}
+
+
+    
     public String getBookingReference() {
         return bookingReference;
     }
 
-    public String getCustomer() {
+    public void setBookingReference(String bookingReference) {
+        this.bookingReference = bookingReference;
+    }
+
+    public Customer getCustomer() {
         return customer;
     }
 
-    public int getFlight() {
+    public void setCustomer(Customer customer) {
+        this.customer = customer;
+    }
+
+    public Flight getFlight() {
         return flight;
     }
 
-    public ArrayList<Passenger> getPassengers() {
+    public void setFlight(Flight flight) {
+        this.flight = flight;
+    }
+
+    public List<Passenger> getPassengers() {
         return passengers;
     }
 
-    public int getSeatSelections() {
+    public void setPassengers(List<Passenger> passengers) {
+        this.passengers = passengers;
+    }
+
+    public List<String> getSeatSelections() {
         return seatSelections;
     }
 
-    public boolean isStatus() {
+    public void setSeatSelections(List<String> seatSelections) {
+        this.seatSelections = seatSelections;
+    }
+
+    public String getStatus() {
         return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getPaymentStatus() {
         return paymentStatus;
     }
 
-    public String toFileString() {
-        StringBuilder passengerData = new StringBuilder();
-        for (Passenger p : passengers) {
-            passengerData.append(p.toFileString()).append(";");
-        }
-        if (!passengers.isEmpty() && passengerData.length() > 0) {
-            passengerData.setLength(passengerData.length() - 1); // Safer truncation
-        }
-        
-        return String.join(",",
-            bookingReference,
-            customer,
-            Integer.toString(flight),
-            Integer.toString(seatSelections),
-            Boolean.toString(status),
-            paymentStatus,
-            passengerData.toString()
-        );
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
-    
-    public static Booking fromFileString(String data) {
-        if (data == null || data.isEmpty()) {
-            System.out.println("Empty booking data");
-            return null;
-        }
 
-        String[] parts = data.split(",", -1);
-        if (parts.length < 6) {
-            System.out.println("Invalid booking data - only " + parts.length + " fields found");
-            return null;
-        }
+    // Key Methods
 
-        try {
-            ArrayList<Passenger> passengers = new ArrayList<>();
-            if (!parts[6].isEmpty()) {
-                String[] passengerEntries = parts[6].split(";");
-                for (String entry : passengerEntries) {
-                    if (!entry.isEmpty()) {
-                        Passenger p = Passenger.fromFileString(entry);
-                        if (p != null) passengers.add(p);
-                    }
-                }
+    // Add a passenger to the booking
+ public void addPassenger(Passenger passenger, String seatType) {
+        if (flight.hasAvailableSeats(seatType)) {
+            passengers.add(passenger);
+            seatSelections.add(seatType);
+            switch (seatType) {
+                case "economy":
+                    flight.reduceEconomySeats();
+                    break;
+                case "business":
+                    flight.reduceBusinessSeats();
+                    break;
+                case "firstclass":
+                    flight.reduceFirstClassSeats();
+                    break;
             }
-
-            return new Booking(
-                parts[0],  // bookingReference
-                parts[1],  // customer
-                Integer.parseInt(parts[2].trim()),  // flight
-                passengers,
-                Integer.parseInt(parts[3].trim()),  // seatSelections
-                Boolean.parseBoolean(parts[4].trim()),  // status
-                parts[5]   // paymentStatus
-            );
-        } catch (Exception e) {
-            System.out.println("Error parsing booking: " + e.getMessage());
-            e.printStackTrace();
-            return null;
+            flight.decreaseAvailableSeats();
+            System.out.println("Passenger added successfully to booking.");
+        } else {
+            System.out.println("No available " + seatType + " seats for this flight.");
         }
     }
 
+    // Calculate total price for the booking
+    public double calculateTotalPrice() {
+        double total = 0;
+        for (String seat : seatSelections) {
+            total += flight.getPriceBySeatType(seat);
+        }
+        return total;
+    }
 
-    
-    public void addPassenger(Passenger passenger){   
-    
+    // Confirm the booking
+    public void confirmBooking() {
+        if (paymentStatus.equals("paid") && status.equals("pending")) {
+            status = "confirmed";
+            System.out.println("Booking confirmed!");
+        } else {
+            System.out.println("Booking cannot be confirmed. Check payment and status.");
+        }
     }
+
+    // Cancel the booking
+    public void cancelBooking() {
+        if (status.equals("confirmed")) {
+            status = "cancelled";
+            System.out.println("Booking cancelled!");
+        } else {
+            System.out.println("Booking cannot be cancelled as it is not confirmed.");
+        }
+    }  
     
-    public void calculateTotalPrice(){
+   public void generateItinerary() {
+        System.out.println("Itinerary : ");
+        System.out.println("Booking Reference: " + bookingReference);
+        System.out.println("Customer: " + customer.getName() + " (" + customer.getEmail() + ")");
+        System.out.println("Flight: " + flight.getFlightID() + " from " + flight.toString());
+        System.out.println("Passengers : ");
+        for (int i = 0; i < passengers.size(); i++) {
+            Passenger p = passengers.get(i);
+            System.out.println("  - " + p.getName() + " | Seat Type: " + seatSelections.get(i));
+        }
+        System.out.println("Total Price: " + calculateTotalPrice());
+        System.out.println("Status: " + status + ", Payment: " + paymentStatus);
+    }    
     
-    }
     
-    
-    public void confirmBooking(){   
-    
-    }
-    
-    
-    public void cancelBooking(){   
-    
-    }
-    
-    
-    public void generateItinerary(){
-        
-    }
     
     
 }

@@ -15,18 +15,44 @@ public class Customer extends User {
 
     public Customer() {
     }
+
+    public Customer(ArrayList<Booking> bookingHistory, int customerId, String address, ArrayList<String> customer_preferences) {
+        this.bookingHistory = bookingHistory;
+        this.customerId = customerId;
+        this.address = address;
+        this.customer_preferences = customer_preferences;
+    }
+
+    public Customer(ArrayList<Booking> bookingHistory, int customerId, String address, ArrayList<String> customer_preferences, String userId, String userName, String name, String email, String password, boolean contactInfo) {
+        super(userId, userName, name, email, password, contactInfo);
+        this.bookingHistory = bookingHistory;
+        this.customerId = customerId;
+        this.address = address;
+        this.customer_preferences = customer_preferences;
+    }
+
     public Customer(String userId, String userName, String name, String email, String password, boolean contactInfo) {
         super(userId, userName, name, email, password, contactInfo);
     }
 
-    public void customerInfo() {
-        super.setName();
-        super.setUserId();
-        super.setUserName();
-        super.setEmail();
-        super.setPassword();
-        super.setContactInfo();
+
+
+    public ArrayList<Booking> getBookingHistory() {
+        return bookingHistory;
     }
+
+    public int getCustomerId() {
+        return customerId;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public ArrayList<String> getCustomer_preferences() {
+        return customer_preferences;
+    }
+    
 
 
     
@@ -63,12 +89,11 @@ public class Customer extends User {
          String email =input.nextLine();
          System.out.print("Enter your password: ");
          String password =input.nextLine();
-         System.out.print("Enter your role (customer/agent/administrator): ");
-         String role =input.nextLine();
-         User user =FileManager.authenticateUser(email, password, role);
+         User user =FileManager.authenticateUser(email, password, "customer");
          
         if (user !=null) {
             System.out.println("welcome back "+user.getName());
+            this.loggedInUser =user;
             
         }else System.out.println("invalid credentials for "+email);
      }
@@ -80,9 +105,9 @@ public class Customer extends User {
          String password =input.nextLine();
          
         
-         if (email !=null && this.getEmail().equals(email)&&
-                 password !=null&&this.getPassword().equals(password)) {
-             System.out.println("Goodbye "+this.getName());
+         if (email !=null && loggedInUser.getEmail().equals(email)&&
+                 password !=null&&loggedInUser.getPassword().equals(password)) {
+             System.out.println("Goodbye "+loggedInUser.getName());
              
         }else System.out.println(email+" not active yet!");
      }
@@ -103,68 +128,76 @@ public class Customer extends User {
         
     }
     
-    public void creatBooking(){
+    public void creatBooking() {
 
-        System.out.print("Enter flight id: ");
-        String flightId = input.nextLine();
+    System.out.print("Enter flight id: ");
+    String flightId = input.nextLine();
 
-        List<Flight> flights = FileManager.loadFlights();
-        Flight selectedFlight = null;
+    List<Flight> flights = FileManager.loadFlights();
+    Flight selectedFlight = null;
 
-        for (Flight flight : flights) {
-            if (flight.getFlightID().equalsIgnoreCase(flightId)) {
-                selectedFlight = flight;
-                break;
-            }
+    for (Flight flight : flights) {
+        if (flight.getFlightID().equalsIgnoreCase(flightId)) {
+            selectedFlight = flight;
+            break;
         }
+    }
 
-        if (selectedFlight == null) {
-            System.out.println("Flight not found.");
-            return;
+    if (selectedFlight == null) {
+        System.out.println("Flight not found.");
+        return;
+    }
+
+    System.out.print("How many seats to book? ");
+    int seatCount = Integer.parseInt(input.nextLine());
+
+    ArrayList<Passenger> passengers = new ArrayList<>();
+    ArrayList<String> seatSelections = new ArrayList<>();
+
+    for (int i = 1; i <= seatCount; i++) {
+        System.out.println("Enter passenger " + i + " details:");
+        System.out.print("Passenger ID: ");
+        String id = input.nextLine();
+        System.out.print("Name: ");
+        String name = input.nextLine();
+        System.out.print("Passport Number: ");
+        String passport = input.nextLine();
+        System.out.print("Date of Birth (yyyy-mm-dd): ");
+        String dob = input.nextLine();
+        System.out.print("Special Requests: ");
+        String special = input.nextLine();
+        System.out.print("Seat Type (economy/business/firstclass): ");
+        String seatType = input.nextLine().toLowerCase();
+
+        Passenger p = new Passenger(id, name, passport, dob, special);
+        passengers.add(p);
+        seatSelections.add(seatType);
+
+        FileManager.savePassenger(p);
+    }
+
+        String bookingRef = "BK" + System.currentTimeMillis();
+        Booking booking = new Booking(bookingRef, this, selectedFlight); 
+
+        for (int i = 0; i < passengers.size(); i++) {
+            booking.addPassenger(passengers.get(i), seatSelections.get(i)); 
         }
-
-        System.out.print("How many seats to book? ");
-        int seatCount = Integer.parseInt(input.nextLine());
-
-        ArrayList<Passenger> passengers = new ArrayList<>();
-        for (int i = 1; i <= seatCount; i++) {
-            System.out.println("Enter passenger " + i + " details:");
-            System.out.print("Passenger ID: ");
-            String id = input.nextLine();
-            System.out.print("Name: ");
-            String name = input.nextLine();
-            System.out.print("Passport Number: ");
-            String passport = input.nextLine();
-            System.out.print("Date of Birth (yyyy-mm-dd): ");
-            String dob = input.nextLine();
-            System.out.print("Special Requests: ");
-            String special = input.nextLine();
-
-            Passenger p = new Passenger(id, name, passport, dob, special);
-            passengers.add(p);
-            FileManager.savePassenger(p);
-        }
-
-        String bookingRef = "BK" + System.currentTimeMillis(); 
-        Booking booking = new Booking(bookingRef, this.getUserName(), Integer.parseInt(flightId),
-                passengers, seatCount, true, "Pending");
 
         FileManager.saveBooking(booking);
         System.out.println("Booking created successfully! Reference: " + bookingRef);
-
-
     }
-    
-    public void viewBookings(){
+
+
+        public void viewBookings() {
         List<Booking> bookings = FileManager.loadBookings();
         boolean found = false;
 
         for (Booking booking : bookings) {
-            if (booking.getCustomer().equalsIgnoreCase(this.getUserName())) {
+            if (booking.getCustomer().getUserName().equalsIgnoreCase(this.getUserName())) {
                 System.out.println("Booking Ref: " + booking.getBookingReference());
-                System.out.println("Flight #: " + booking.getFlight());
+                System.out.println("Flight Id: " + booking.getFlight().getFlightID());
                 System.out.println("Seats: " + booking.getSeatSelections());
-                System.out.println("Status: " + booking.getPaymentStatus());
+                System.out.println("Status: " + booking.getStatus() + " | Payment: " + booking.getPaymentStatus());
                 System.out.println("------");
                 found = true;
             }
@@ -173,11 +206,9 @@ public class Customer extends User {
         if (!found) {
             System.out.println("You have no bookings.");
         }
+        }
 
-
-    }
-    
-    public void cancelBooking() {
+        public void cancelBooking() {
         System.out.print("Enter booking reference to cancel: ");
         String ref = input.nextLine();
 
@@ -188,7 +219,7 @@ public class Customer extends User {
         while (iterator.hasNext()) {
             Booking booking = iterator.next();
             if (booking.getBookingReference().equalsIgnoreCase(ref) &&
-                booking.getCustomer().equalsIgnoreCase(this.getUserName())) {
+                booking.getCustomer().getUserName().equalsIgnoreCase(this.getUserName())) {
                 iterator.remove();
                 removed = true;
                 break;
@@ -200,13 +231,14 @@ public class Customer extends User {
                 for (Booking b : bookings) {
                     writer.println(b.toFileString());
                 }
-                System.out.println("Booking cancelled.");
+                System.out.println("Booking cancelled successfully.");
             } catch (IOException e) {
-                System.out.println("Error cancelling booking.");
+                System.out.println("Error writing to bookings file.");
             }
         } else {
-            System.out.println("Booking not found.");
+            System.out.println("Booking not found or not yours.");
         }
     }
+
 
 }

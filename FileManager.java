@@ -11,6 +11,7 @@ public class FileManager {
     public static final String FLIGHTS_FILE ="flights.txt";
     public static final String BOOKINGS_FILE ="bookings.txt";
     public static final String PASSENGERS_FILE ="passengers.txt";
+    public static final String PAYMENT_FILE ="payment.txt";
     
     
     //save users type
@@ -98,6 +99,15 @@ public class FileManager {
             System.out.println("Error cleaning up users file.");
         }
     }
+    
+    public static void clearFile(String fileName) {
+        try (PrintWriter writer = new PrintWriter(new FileWriter(fileName))) {
+            // empty file
+        } catch (IOException e) {
+            System.out.println("Error clearing file: " + fileName);
+        }
+    }
+
 
         
     // Save flight
@@ -179,6 +189,29 @@ public class FileManager {
         }
         return passengers;
     }
+    
+    public static void savePayments(Payment payment){
+
+    try (PrintWriter writer = new PrintWriter(new FileWriter(PAYMENT_FILE, true))) {
+            writer.println(payment.toFileString());
+        } catch (IOException e) {
+            System.out.println("Error saving payment");
+        }
+
+    }
+    public static List<Payment> loadPayments() {
+        List<Payment> payments = new ArrayList<>();
+        try (Scanner scanner = new Scanner(new File(PAYMENT_FILE))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                payments.add(Payment.fromFileString(line));
+            }
+        } catch (IOException e) {
+            System.out.println("Error loading payments");
+        }
+        return payments;
+    }
+
 
 }
 

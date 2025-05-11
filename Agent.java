@@ -1,5 +1,7 @@
 
 package flight_booking_system;
+import java.util.*;
+import java.io.*;
 
 public class Agent extends User {
     
@@ -7,24 +9,27 @@ public class Agent extends User {
     private String department;
     private double commission;
 
+    public Agent() {
+    }
+
     public Agent(int agentId, String department, double commission) {
         this.agentId = agentId;
         this.department = department;
         this.commission = commission;
     }
 
-    public void agentInfo() {
-        super.setName();
-        super.setUserId();
-        super.setUserName();
-        super.setEmail();
-        super.setPassword();
-        super.setContactInfo();
+    public Agent(int agentId, String department, double commission, String userId, String userName, String name, String email, String password, boolean contactInfo) {
+        super(userId, userName, name, email, password, contactInfo);
+        this.agentId = agentId;
+        this.department = department;
+        this.commission = commission;
     }
 
     public Agent(String userId, String userName, String name, String email, String password, boolean contactInfo) {
         super(userId, userName, name, email, password, contactInfo);
     }
+
+
 
     public static Agent fromFileString(String line) {
         String[] parts = line.split(",");
@@ -48,12 +53,11 @@ public class Agent extends User {
          String email =input.nextLine();
          System.out.print("Enter your password: ");
          String password =input.nextLine();
-         System.out.print("Enter your role: ");
-         String role =input.nextLine();
-         User user =FileManager.authenticateUser(email, password, role);
+         User user =FileManager.authenticateUser(email, password, "customer");
          
         if (user !=null) {
-            System.out.println("welcome back "+this.getName());
+            System.out.println("welcome back "+user.getName());
+            this.loggedInUser =user;
             
         }else System.out.println("invalid credentials for "+email);
      }
@@ -65,12 +69,31 @@ public class Agent extends User {
          String password =input.nextLine();
          
         
-         if (email !=null && this.getEmail().equals(email)&&
-                 this.getPassword().equals(password)) {
-             System.out.println("Goodbye "+this.getName());
+         if (email !=null && loggedInUser.getEmail().equals(email)&&
+                 password !=null&&loggedInUser.getPassword().equals(password)) {
+             System.out.println("Goodbye "+loggedInUser.getName());
              
         }else System.out.println(email+" not active yet!");
      }
     
-    
+    public void manageFlights() {
+        List<Flight> flights = FileManager.loadFlights();
+        if (flights.isEmpty()) {
+            System.out.println("No flights available.");
+            return;
+        }
+
+        System.out.println("Available Flights:");
+        for (Flight f : flights) {
+            f.displayDetails();
+            System.out.println("-------------------");
+        }
+    }
+
+     
+    public void createBookingForCustomer(){
+        Customer newCustomer = new Customer();
+        newCustomer.creatBooking();
+    }
+     
 }

@@ -13,6 +13,7 @@ protected String name;
 protected String email;
 protected String password;
 protected boolean contactInfo;
+static User loggedInUser;
 
     public User() {
     }
