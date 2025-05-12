@@ -5,21 +5,21 @@ import java.io.*;
 
 public class Agent extends User {
     
-    private int agentId;
+    private String agentId;
     private String department;
     private double commission;
 
     public Agent() {
     }
 
-    public Agent(int agentId, String department, double commission) {
+    public Agent(String agentId, String department, double commission) {
         this.agentId = agentId;
         this.department = department;
         this.commission = commission;
     }
 
-    public Agent(int agentId, String department, double commission, String userId, String userName, String name, String email, String password, boolean contactInfo) {
-        super(userId, userName, name, email, password, contactInfo);
+    public Agent(String userId, String username, String name, String email, String password, boolean contactInfo, double commission) {
+        super(userId, username, name, email, password, contactInfo);
         this.agentId = agentId;
         this.department = department;
         this.commission = commission;
@@ -53,7 +53,7 @@ public class Agent extends User {
          String email =input.nextLine();
          System.out.print("Enter your password: ");
          String password =input.nextLine();
-         User user =FileManager.authenticateUser(email, password, "customer");
+         User user =FileManager.authenticateUser(email, password, "agent");
          
         if (user !=null) {
             System.out.println("welcome back "+user.getName());
@@ -69,8 +69,7 @@ public class Agent extends User {
          String password =input.nextLine();
          
         
-         if (email !=null && loggedInUser.getEmail().equals(email)&&
-                 password !=null&&loggedInUser.getPassword().equals(password)) {
+         if (email !=null && loggedInUser.getEmail().equals(email)) {
              System.out.println("Goodbye "+loggedInUser.getName());
              
         }else System.out.println(email+" not active yet!");

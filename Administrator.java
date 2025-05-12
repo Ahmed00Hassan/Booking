@@ -19,10 +19,10 @@ public class Administrator extends User {
         this.securityLevel = securityLevel;
     }
 
-    public Administrator(String adminId, String securityLevel, String userId, String userName, String name, String email, String password, boolean contactInfo) {
-        super(userId, userName, name, email, password, contactInfo);
+    public Administrator(String userId, String username, String name, String email, String password, boolean contactInfo, String adminId, String level) {
+        super(userId, username, name, email, password, contactInfo);
         this.adminId = adminId;
-        this.securityLevel = securityLevel;
+        this.securityLevel = level;
     }
     
 
@@ -61,13 +61,9 @@ public class Administrator extends User {
     @Override
      public void logout(){
          System.out.print("Enter your email: ");
-         String email =input.nextLine();
-         System.out.print("Enter your password: ");
-         String password =input.nextLine();
-         
+         String email =input.nextLine();         
         
-         if (email !=null && this.getEmail().equals(email)&&
-                 this.getPassword().equals(password)) {
+         if (email !=null && this.getEmail().equals(email)) {
              System.out.println("Goodbye "+this.getName());
              
         }else System.out.println(email+" not active yet!");

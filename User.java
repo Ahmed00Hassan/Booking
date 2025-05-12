@@ -28,26 +28,6 @@ static User loggedInUser;
         this.contactInfo = contactInfo;
     }
 
-    public void setUserId() {
-        System.out.print("Enter userId: ");
-        this.userId=input.nextLine();
-    }
-
-    public void setUserName() {
-        System.out.print("Enter your userName: ");
-        this.userName = input.nextLine();
-    }
-
-    public void setName() {
-        System.out.print("Enter your name: ");
-        this.name = input.nextLine();
-    }
-
-    public void setEmail() {
-        System.out.print("Enter your email: ");
-        this.email = input.nextLine();
-    }
-
     public void setPassword() {
         while (true) {
             System.out.print("Enter your password (with letters and numbers) ");
@@ -63,10 +43,6 @@ static User loggedInUser;
         }
     }
 
-    public void setContactInfo() {
-        System.out.println("Enter your contact(true or false)");
-        this.contactInfo = input.nextBoolean();
-    }
 
     public String getUserId() {
         return userId;

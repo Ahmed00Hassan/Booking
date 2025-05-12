@@ -7,88 +7,33 @@ import java.io.*;
 
 public class BookingSystem {
 
-    private List<User> users;
+         private List<User> users;
     private List<Flight> flights;
     private List<Booking> bookings;
-
     Scanner input = new Scanner(System.in);
+    
+    public List<User> getUsers() {
+    return this.users;
+}
 
+    
     public BookingSystem() {
         users = FileManager.loadUsers();
         flights = FileManager.loadFlights();
         bookings = FileManager.loadBookings();
     }
-
-    // 1. searchFlights()
-    public void searchFlights() {
-        System.out.print("Enter source city: ");
-        String source = input.nextLine();
-        System.out.print("Enter destination city: ");
-        String destination = input.nextLine();
-
-        boolean found = false;
-        for (Flight flight : flights) {
-            if (flight.getSource().equalsIgnoreCase(source) &&
-                flight.getDestination().equalsIgnoreCase(destination)) {
-                flight.displayDetails();
-                found = true;
+      public static Flight searchFlight(String source, String destination){
+        List<Flight> flights =FileManager.loadFlights();
+        for (Flight flight : flights){
+            if (flight.getSource().equalsIgnoreCase(source)&&
+                    flight.getDestination().equalsIgnoreCase(destination)) {
+                return flight;
             }
         }
-
-        if (!found) {
-            System.out.println("No matching flights found.");
-        }
+        return null;
     }
 
-    // 2. createBooking()
-    public void createBooking(Customer customer) {
-        System.out.print("Enter flight ID: ");
-        String flightId = input.nextLine();
 
-        Flight selectedFlight = null;
-        for (Flight f : flights) {
-            if (f.getFlightID().equalsIgnoreCase(flightId)) {
-                selectedFlight = f;
-                break;
-            }
-        }
-
-        if (selectedFlight == null) {
-            System.out.println("Flight not found.");
-            return;
-        }
-
-        System.out.print("Number of seats: ");
-        int count = Integer.parseInt(input.nextLine());
-
-        Booking booking = new Booking("BK" + System.currentTimeMillis(), customer, selectedFlight);
-
-        for (int i = 1; i <= count; i++) {
-            System.out.println("Passenger " + i);
-            System.out.print("ID: ");
-            String id = input.nextLine();
-            System.out.print("Name: ");
-            String name = input.nextLine();
-            System.out.print("Passport: ");
-            String passport = input.nextLine();
-            System.out.print("DOB: ");
-            String dob = input.nextLine();
-            System.out.print("Special Requests: ");
-            String special = input.nextLine();
-            System.out.print("Seat Type: ");
-            String seatType = input.nextLine();
-
-            Passenger p = new Passenger(id, name, passport, dob, special);
-            booking.addPassenger(p, seatType);
-            FileManager.savePassenger(p);
-        }
-
-        FileManager.saveBooking(booking);
-        bookings.add(booking);
-        System.out.println("Booking created successfully. Ref: " + booking.getBookingReference());
-    }
-
-    // 3. processPayment()
     public void processPayment(String bookingRef) {
         for (Booking booking : bookings) {
             if (booking.getBookingReference().equalsIgnoreCase(bookingRef)) {
@@ -98,7 +43,6 @@ public class BookingSystem {
                 if (confirm.equalsIgnoreCase("yes")) {
                     booking.setPaymentStatus("paid");
                     booking.confirmBooking();
-
                     FileManager.saveBooking(booking);
                     System.out.println("Payment successful and booking confirmed.");
                 } else {
@@ -109,8 +53,6 @@ public class BookingSystem {
         }
         System.out.println("Booking not found.");
     }
-
-    // 4. generateTicket()
     public void generateTicket(String bookingRef) {
         for (Booking booking : bookings) {
             if (booking.getBookingReference().equalsIgnoreCase(bookingRef)) {
@@ -121,4 +63,40 @@ public class BookingSystem {
         }
         System.out.println("Booking not found.");
     }
+
+
+    public User getUserById(String id) {
+        for (User user : users) {
+            if (user.getUserId().equals(id)) {
+                return user;
+            }
+        }
+        return null;
+    }
+
+    // ترجع الرحلة بناءً على الـ ID
+    public Flight getFlightById(String id) {
+        for (Flight flight : flights) {
+            if (flight.getFlightID().equals(id)) {
+                return flight;
+            }
+        }
+        return null;
+    }
+
+    // ترجع الحجز بناءً على المرجع
+    public Booking getBookingByRef(String ref) {
+        for (Booking booking : bookings) {
+            if (booking.getBookingReference().equals(ref)) {
+                return booking;
+            }
+        }
+        return null;
+    }
+
+    // ترجع كل الرحلات
+    public List<Flight> getAllFlights() {
+        return new ArrayList<>(flights);
+    }
+
 }

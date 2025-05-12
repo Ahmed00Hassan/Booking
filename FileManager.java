@@ -107,6 +107,7 @@ public class FileManager {
             System.out.println("Error clearing file: " + fileName);
         }
     }
+    
 
 
         
@@ -133,6 +134,41 @@ public class FileManager {
         }
         return flights;
     }
+    
+    public static void addFlight(Flight flight) {
+    
+        saveFlight(flight);
+
+        System.out.println("Flight " + flight.getFlightID() + " has been added successfully.");
+    }
+    
+    public static void removeFlight(String flightIDToRemove) {
+        List<Flight> flights = loadFlights(); // تحميل الرحلات من الملف
+        boolean removed = false;
+
+        // استخدام Iterator عشان نقدر نحذف وإحنا بنلف
+        Iterator<Flight> iterator = flights.iterator();
+        while (iterator.hasNext()) {
+            Flight flight = iterator.next();
+            if (flight != null && flight.getFlightID().equalsIgnoreCase(flightIDToRemove)) {
+                iterator.remove();
+                removed = true;
+            }
+        }
+        if (removed) {
+            try (PrintWriter writer = new PrintWriter(new FileWriter(FLIGHTS_FILE))) {
+                for (Flight flight : flights) {
+                    writer.println(flight.toFileString());
+                }
+                System.out.println("Flight removed successfully.");
+            } catch (IOException e) {
+                System.out.println("Error saving flights after removal.");
+            }
+        } else {
+            System.out.println("Flight ID not found.");
+        }
+    }
+    
     public static Flight searchFlight(String source, String destination){
         List<Flight> flights =loadFlights();
         for (Flight flight : flights){

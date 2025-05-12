@@ -9,21 +9,21 @@ public class Customer extends User {
     
     Scanner input =new Scanner(System.in);
     private ArrayList<Booking> bookingHistory;
-    private int customerId;
-    String address;
+    private String customerId;
+    private String address;
     ArrayList<String> customer_preferences;
 
     public Customer() {
     }
 
-    public Customer(ArrayList<Booking> bookingHistory, int customerId, String address, ArrayList<String> customer_preferences) {
+    public Customer(ArrayList<Booking> bookingHistory, String customerId, String address, ArrayList<String> customer_preferences) {
         this.bookingHistory = bookingHistory;
         this.customerId = customerId;
         this.address = address;
         this.customer_preferences = customer_preferences;
     }
 
-    public Customer(ArrayList<Booking> bookingHistory, int customerId, String address, ArrayList<String> customer_preferences, String userId, String userName, String name, String email, String password, boolean contactInfo) {
+    public Customer(ArrayList<Booking> bookingHistory, String customerId, String address, ArrayList<String> customer_preferences, String userId, String userName, String name, String email, String password, boolean contactInfo) {
         super(userId, userName, name, email, password, contactInfo);
         this.bookingHistory = bookingHistory;
         this.customerId = customerId;
@@ -41,7 +41,7 @@ public class Customer extends User {
         return bookingHistory;
     }
 
-    public int getCustomerId() {
+    public String getCustomerId() {
         return customerId;
     }
 
@@ -72,7 +72,7 @@ public class Customer extends User {
     }    
 
 
-    public Customer(int customerId, String address, ArrayList<String> customer_preferences,
+    public Customer(String customerId, String address, ArrayList<String> customer_preferences,
                     String Userid, String Username, String Name,
                     String Email, String Password, boolean ContactInfo) {
         
@@ -105,8 +105,7 @@ public class Customer extends User {
          String password =input.nextLine();
          
         
-         if (email !=null && loggedInUser.getEmail().equals(email)&&
-                 password !=null&&loggedInUser.getPassword().equals(password)) {
+         if (email !=null && loggedInUser.getEmail().equals(email)) {
              System.out.println("Goodbye "+loggedInUser.getName());
              
         }else System.out.println(email+" not active yet!");

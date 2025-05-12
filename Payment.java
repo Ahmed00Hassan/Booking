@@ -13,8 +13,11 @@ public class Payment {
     private LocalDateTime transactionDate;
 
     // Constructor
-    public Payment(String paymentId, String bookingReference, double amount, 
-                   String method, String status,LocalDateTime transactionDate) {
+    
+    public Payment() {
+    }
+
+    public Payment(String paymentId, String bookingReference, double amount, String method, String status, LocalDateTime transactionDate) {
         this.paymentId = paymentId;
         this.bookingReference = bookingReference;
         this.amount = amount;
@@ -69,19 +72,23 @@ public class Payment {
         return isValid;
     }
 
-public void processPayment() {
-        
-    if (validatePaymentDetails()) {
-            this.status = "Confirmed";
-            this.transactionDate = LocalDateTime.now();
-            System.out.println("Payment processed successfully.");
+    public void processPayment(String source, String destination, String seatType, int numberOfSeats) {
+        Flight flight = FileManager.searchFlight(source, destination);
+        if (flight == null) {
+            System.out.println("No flight found from " + source + " to " + destination + ".");
+            return;
         }
-        else {
-            
-            this.status = "Failed";
-            System.out.println("Payment validation failed. Payment not processed.");
-        
+        if (flight.getAvailableSeats(seatType) < numberOfSeats) {
+            System.out.println("Not enough seats available in " + seatType + " class.");
+            return;
         }
+        flight.reduceAvailableSeats(seatType, numberOfSeats);
+        double seatPrice = flight.getPriceBySeatType(seatType);
+        this.amount = seatPrice * numberOfSeats;
+    this.transactionDate = LocalDateTime.now();
+        FileManager.savePayments(this);
+        System.out.println("Payment completed. Total amount: " + this.amount + 
+            " for " + numberOfSeats + " " + seatType + " seat(s)."+"date of transaction : "+this.transactionDate);
     }
 public void updateStatus(String newStatus) {
         this.status = newStatus;
