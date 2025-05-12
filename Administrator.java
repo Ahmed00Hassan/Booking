@@ -25,15 +25,6 @@ public class Administrator extends User {
         this.securityLevel = securityLevel;
     }
     
-    
-    public void adminInfo() {
-        super.setName();
-        super.setUserId();
-        super.setUserName();
-        super.setEmail();
-        super.setPassword();
-        super.setContactInfo();
-    }
 
     public Administrator(String userId, String userName, String name, String email, String password, boolean contactInfo) {
         super(userId, userName, name, email, password, contactInfo);

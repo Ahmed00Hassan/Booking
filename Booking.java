@@ -10,8 +10,8 @@ public class Booking {
     private Flight flight;
     private List<Passenger> passengers;
     private List<String> seatSelections;
-    private String status; // e.g., "confirmed", "pending", "cancelled"
-    private String paymentStatus; // e.g., "paid", "pending", "failed"
+    private String status;// "confirmed", "pending", "cancelled"
+    private String paymentStatus;   //"paid", "pending", "failed"
 
     // Constructor
     public Booking(String bookingReference, Customer customer, Flight flight) {
@@ -41,7 +41,7 @@ public class Booking {
         seatData.setLength(seatData.length() - 1);
     }
 
-    return String.join("##",
+    return String.join(",",
         bookingReference,
         customer.getUserName(),
         flight.getFlightID(),
@@ -54,7 +54,7 @@ public class Booking {
 
 public static Booking fromFileString(String data) {
     try {
-        String[] parts = data.split("##", -1);
+        String[] parts = data.split(",", -1);
         if (parts.length < 7) {
             System.out.println("Invalid booking format.");
             return null;
@@ -63,7 +63,7 @@ public static Booking fromFileString(String data) {
         String bookingRef = parts[0];
         String customerName = parts[1]; // userName
         String flightId = parts[2];
-        String[] seatTypes = parts[3].split("\\|");
+        String[] seatTypes = parts[3].split(",");
         String status = parts[4];
         String paymentStatus = parts[5];
         String passengerRaw = parts[6];

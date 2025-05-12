@@ -4,7 +4,8 @@ package flight_booking_system;
 import java.time.LocalDateTime;
 
 public class Payment {
-     private String paymentId;
+    
+    private String paymentId;
     private String bookingReference;
     private double amount;
     private String method;
@@ -97,7 +98,7 @@ public String toFileString() {
 
 
 public static Payment fromFileString(String data) {
-    String[] parts = data.split(",", -1); // -1 علشان يحتفظ بالفارغين لو فيه
+    String[] parts = data.split(",", -1);
     if (parts.length < 6) {
         System.out.println("Invalid payment data");
         return null;

@@ -1,9 +1,13 @@
 
 package flight_booking_system;
 
-public class Flight {
+import java.util.Scanner;
 
-private String flightID;
+public class Flight {
+    
+        private Scanner input = new Scanner(System.in);
+
+    private String flightID;
 
     private String airline;
 
@@ -32,6 +36,8 @@ private String flightID;
 
     private double firstClassPrice;
 
+    public Flight() {
+    }
 
     public Flight(String flightID, String airline, String source, String destination,
               String departureTime, String arrivalTime,
@@ -54,8 +60,6 @@ private String flightID;
     this.firstClassPrice = firstClassPrice;
     }
 
-    public Flight() {
-    }
 
 
     public String toFileString() {
@@ -93,6 +97,78 @@ private String flightID;
                 economySeats, businessSeats, firstClassSeats,
                 economyPrice, businessPrice, firstClassPrice);
     }
+
+
+    public void setFlightID() {
+        System.out.print("Enter Flight ID: ");
+        this.flightID = input.nextLine();
+    }
+
+    public void setAirline() {
+        System.out.print("Enter Airline: ");
+        this.airline = input.nextLine();
+    }
+
+    public void setSource() {
+        System.out.print("Enter Source City: ");
+        this.source = input.nextLine();
+    }
+
+    public void setDestination() {
+        System.out.print("Enter Destination City: ");
+        this.destination = input.nextLine();
+    }
+
+    public void setDepartureTime() {
+        System.out.print("Enter Departure Time: ");
+        this.departureTime = input.nextLine();
+    }
+
+    public void setArrivalTime() {
+        System.out.print("Enter Arrival Time: ");
+        this.arrivalTime = input.nextLine();
+    }
+
+    public void setTotalSeats() {
+        System.out.print("Enter Total Seats: ");
+        this.totalSeats = Integer.parseInt(input.nextLine());
+    }
+
+    public void setAvailableSeats() {
+        System.out.print("Enter Available Seats: ");
+        this.availableSeats = Integer.parseInt(input.nextLine());
+    }
+
+    public void setEconomySeats() {
+        System.out.print("Enter Economy Seats: ");
+        this.economySeats = Integer.parseInt(input.nextLine());
+    }
+
+    public void setBusinessSeats() {
+        System.out.print("Enter Business Seats: ");
+        this.businessSeats = Integer.parseInt(input.nextLine());
+    }
+
+    public void setFirstClassSeats() {
+        System.out.print("Enter First Class Seats: ");
+        this.firstClassSeats = Integer.parseInt(input.nextLine());
+    }
+
+    public void setEconomyPrice() {
+        System.out.print("Enter Economy Price: ");
+        this.economyPrice = Double.parseDouble(input.nextLine());
+    }
+
+    public void setBusinessPrice() {
+        System.out.print("Enter Business Price: ");
+        this.businessPrice = Double.parseDouble(input.nextLine());
+    }
+
+    public void setFirstClassPrice() {
+        System.out.print("Enter First Class Price: ");
+        this.firstClassPrice = Double.parseDouble(input.nextLine());
+    }
+
 
     public String getSource() {
         return source;
@@ -145,15 +221,15 @@ private String flightID;
 
 
     public boolean hasAvailableSeats(String seatType) {
-     seatType = seatType.toLowerCase();
-    switch (seatType) {
-        case "economy": return economySeats > 0;
-        case "business": return businessSeats > 0;
-        case "firstclass": return firstClassSeats > 0;
-        default:
-            System.out.println("Enter a valid option\n");
-            return false;
-    }
+       seatType = seatType.toLowerCase();
+       switch (seatType) {
+           case "economy": return economySeats > 0;
+           case "business": return businessSeats > 0;
+           case "firstclass": return firstClassSeats > 0;
+           default:
+               System.out.println("Enter a valid option\n");
+               return false;
+       }
 
     }
 

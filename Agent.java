@@ -77,6 +77,7 @@ public class Agent extends User {
      }
     
     public void manageFlights() {
+        
         List<Flight> flights = FileManager.loadFlights();
         if (flights.isEmpty()) {
             System.out.println("No flights available.");
@@ -92,8 +93,66 @@ public class Agent extends User {
 
      
     public void createBookingForCustomer(){
+        System.out.print("Enter customer username: ");
+        String username = input.nextLine();
+
+        Customer customer = null;
+        for (User u : FileManager.loadUsers()) {
+            if (u.getClass().getSimpleName().equalsIgnoreCase("Customer")&&
+                    u.getUserName().equalsIgnoreCase(username)) {
+                customer = (Customer) u;
+                break;
+            }
+        }
+
+        if (customer == null) {
+            System.out.println("Customer not found.");
+            return;
+        }
         Customer newCustomer = new Customer();
         newCustomer.creatBooking();
     }
+    
+    public void modifyBooking(){
+        System.out.print("Enter booking reference: ");
+        String ref =input.nextLine();
+        
+        List<Booking> bookings = FileManager.loadBookings();
+        for(Booking b : bookings){
+             if (b.getBookingReference().equalsIgnoreCase(ref)) {
+                 System.out.print("new status (pending/confirmed/cancelled): ");
+                 b.setStatus(input.nextLine());
+                 System.out.print("new paument status (paid/pending/failed): ");
+                 b.setPaymentStatus(input.nextLine());
+                 
+                 try    (PrintWriter writer =new PrintWriter(new FileWriter(FileManager.BOOKINGS_FILE))){
+                     
+                     for(Booking bk : bookings){
+                         writer.println(bk.toFileString());
+                     }
+                 } catch(IOException e){
+                     System.out.println("error saving booking");
+                 }
+                 
+                 System.out.println("booking update"); return;
+            }
+        }
+        System.out.println("booking not found!");
+    }
+    
+    
+    public void generateReports() {
+        List<Booking> bookings = FileManager.loadBookings();
+        double totalSales = 0;
+
+        for (Booking b : bookings) {
+            totalSales += b.calculateTotalPrice();
+        }
+
+        System.out.println("Total bookings: " + bookings.size());
+        System.out.println("Total sales: " + totalSales);
+        System.out.println("Your commission: " + (totalSales * commission / 100));
+    }
+
      
 }

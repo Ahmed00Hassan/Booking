@@ -30,7 +30,7 @@ public class Passenger {
     }
     public static Passenger fromFileString(String data){
         System.out.println("reading: ");
-        String[] parts =data.split("//",-1);
+        String[] parts =data.split("|",-1);
         if (parts.length <5) {
             System.out.println("invalid passenger data");
             return null;
@@ -67,7 +67,7 @@ public void getPassengerDetailsByID(String targetId) {
         while ((line = reader.readLine()) != null) {
             String[] parts = line.split(",");
             if (parts.length >= 5 && parts[0].equals(targetId)) {
-                // هنا يجب تمرير 'passengerId' كـ int وليس String
+
                 updateInfo(parts[0], parts[1], parts[2], parts[3], parts[4]);
                 System.out.println("Passenger Found:");
                 System.out.println("Passenger ID: " + passengerId);

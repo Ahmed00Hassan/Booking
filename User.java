@@ -34,7 +34,7 @@ static User loggedInUser;
     }
 
     public void setUserName() {
-        System.out.print("Enter your user name: ");
+        System.out.print("Enter your userName: ");
         this.userName = input.nextLine();
     }
 
@@ -95,7 +95,7 @@ static User loggedInUser;
 
 
     public String toFileString(){
-        return userId +","+userName +","+name+","+email+","+password+","+contactInfo+",";
+        return userId +","+userName +","+name+","+email+","+password+","+contactInfo;
     }
 
 
