@@ -85,10 +85,10 @@ public static Booking fromFileString(String data) {
             }
         }
 
-        if (customer == null || flight == null) {
-            System.out.println("Customer or flight not found.");
-            return null;
-        }
+//        if (customer == null || flight == null) {
+//            System.out.println("Customer or flight not found.");
+//            return null;
+//        }
 
         // Load passengers
         List<Passenger> passengers = new ArrayList<>();

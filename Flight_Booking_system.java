@@ -16,6 +16,7 @@ public class Flight_Booking_system {
         Agent agent =new Agent();
         Customer customer =new Customer();
         Payment payment = new Payment();
+        Administrator admin =new Administrator();
 
         System.out.println("\tWelcome to the Flight Booking System");
         System.out.println("1. Login");
@@ -129,17 +130,26 @@ public class Flight_Booking_system {
                 System.out.println("2. Book Flight");
                 System.out.println("3. Make Payment");
                 System.out.println("4. Cancel Booking");
+                System.out.println("5. view Booking");
+                
                 
             } else if (loggedInUser instanceof Administrator) {
                 System.out.println("1. Add Flight");
                 System.out.println("2. Remove Flight");
                 System.out.println("3. View Flights");
                 System.out.println("4. Generate Reports");
+                System.out.println("5. Creat user");
+                System.out.println("6. Modify system setting");
+                System.out.println("7. View system logs");
+                System.out.println("8. Manage user access");
                 
             } else if (loggedInUser instanceof Agent) {
-                System.out.println("1. View Flights");
+                System.out.println("1. View All Flights");
                 System.out.println("2. Book for Customer");
+                System.out.println("3. Modify Booking");
+                System.out.println("4. Generate Reports");
             }
+
             System.out.println("0. Logout");
             System.out.print("Enter your choice: ");
             choice = scanner.nextInt();
@@ -148,16 +158,7 @@ public class Flight_Booking_system {
             switch (choice) {
                 case 1:
                     if (loggedInUser instanceof Customer) {
-                        System.out.print("Enter source: ");
-                        String source = scanner.nextLine();
-                        System.out.print("Enter destination: ");
-                        String destination = scanner.nextLine();
-                        Flight found = BookingSystem.searchFlight(source, destination);
-                        if (found != null) {
-                            System.out.println("Flight found: " + found);
-                        } else {
-                            System.out.println("No flight found.");
-                        }
+                        customer.searchflights();
                     } else if (loggedInUser instanceof Administrator) {
                         System.out.print("Enter flight ID: ");
                         String flightID = scanner.nextLine();
@@ -224,6 +225,11 @@ public class Flight_Booking_system {
                         int numberOfSeats = scanner.nextInt();
                         scanner.nextLine();
                         payment.processPayment(source, destination, seatType, numberOfSeats);
+                    }else if (loggedInUser instanceof Administrator){
+                        agent.manageFlights();
+                    }
+                    else if (loggedInUser instanceof Agent){
+                        agent.modifyBooking();
                     }
                     break;
 
@@ -232,8 +238,35 @@ public class Flight_Booking_system {
                         customer.cancelBooking();
                     } else if (loggedInUser instanceof Administrator) {
                         agent.generateReports();
+                    } else if (loggedInUser instanceof Agent){
+                        agent.generateReports();
                     }
                     break;
+                case 5:
+                    if(loggedInUser instanceof Customer){
+                        customer.viewBookings();
+                        
+                    }else if (loggedInUser instanceof Administrator){
+                        admin.createUser();
+                    }
+                    break;
+                
+                case 6:
+                    
+                    if (loggedInUser instanceof Administrator){
+                        admin.modifySystemSettings();
+                    }
+                    break;
+                case 7:
+                    if (loggedInUser instanceof Administrator){
+                        admin.viewSystemLogs();
+                    }
+                    break;
+                case 8:
+                    if (loggedInUser instanceof Administrator){
+                    admin.manageUserAccess();
+                    }
+                    
 
                 case 0:
                     if (loggedInUser instanceof Customer) {

@@ -29,7 +29,6 @@ public class Passenger {
                 + dateOfBirth + "|" +specialRequests;
     }
     public static Passenger fromFileString(String data){
-        System.out.println("reading: ");
         String[] parts =data.split("|",-1);
         if (parts.length <5) {
             System.out.println("invalid passenger data");

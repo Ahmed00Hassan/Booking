@@ -28,6 +28,38 @@ static User loggedInUser;
         this.contactInfo = contactInfo;
     }
 
+    public void setInput(Scanner input) {
+        this.input = input;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public void setContactInfo(boolean contactInfo) {
+        this.contactInfo = contactInfo;
+    }
+
+    public static void setLoggedInUser(User loggedInUser) {
+        User.loggedInUser = loggedInUser;
+    }
+
     public void setPassword() {
         while (true) {
             System.out.print("Enter your password (with letters and numbers) ");
